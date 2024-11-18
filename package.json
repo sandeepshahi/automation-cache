@@ -1,0 +1,22 @@
+{
+  "name": "automation-cache-lib",
+  "version": "1.0.0",
+  "description": "redis cache lib for CRUD operations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orgs/ONDC-Official/automation-cache"
+  },
+  "keywords": [
+    "automation-cache",
+    "ondc-redis-cache"
+  ],
+  "author": "ondc-official",
+  "contributors": [
+    "sandeepshahi"
+  ],
+  "license": "ISC"
+}
