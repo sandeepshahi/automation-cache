@@ -1,7 +1,7 @@
 # automation-cache
 
 ```js
-import { redisService } from "automation-cache-lib";
+import { redisService } from "ondc-automation-cache-lib";
 
 // Select and use database 0
 redisService.useDb(0);
