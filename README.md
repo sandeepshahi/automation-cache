@@ -1,7 +1,7 @@
 # automation-cache
 
 ```js
-import { redisService } from "redis-cache-library";
+import { redisService } from "automation-cache-lib";
 
 // Select and use database 0
 redisService.useDb(0);

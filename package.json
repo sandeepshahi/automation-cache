@@ -1,5 +1,5 @@
 {
-  "name": "automation-cache-lib",
+  "name": "ondc-automation-cache-lib",
   "version": "1.0.0",
   "description": "redis cache lib for CRUD operations",
   "main": "dist/index.js",
@@ -19,7 +19,8 @@
   "homepage": "https://github.com/ONDC-Official/automation-cache#readme",
   "keywords": [
     "automation-cache",
-    "ondc-redis-cache"
+    "ondc-redis-cache",
+    "ondc-automation-cache-lib"
   ],
   "author": "ondc-official",
   "contributors": [
