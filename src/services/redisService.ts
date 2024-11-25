@@ -18,56 +18,85 @@ class RedisService {
     key: string,
     value: string,
     ttl: number | null = null
-  ): Promise<string> {
+  ): Promise<boolean> {
     this.checkInstance();
-    if (ttl) {
-      await this.redis!.set(key, value, "EX", ttl);
-    } else {
-      await this.redis!.set(key, value);
+    try {
+      if (ttl) {
+        await this.redis!.set(key, value, "EX", ttl);
+      } else {
+        await this.redis!.set(key, value);
+      }
+      return true;
+    } catch {
+      return false;
     }
-    return `Key ${key} set successfully.`;
   }
 
   async getKey(key: string): Promise<string | null> {
     this.checkInstance();
-    return this.redis!.get(key);
+    try {
+      return this.redis!.get(key);
+    } catch {
+      return null;
+    }
   }
 
-  async deleteKey(key: string): Promise<string> {
+  async deleteKey(key: string): Promise<boolean> {
     this.checkInstance();
-    const result = await this.redis!.del(key);
-    return result ? `Key ${key} deleted.` : `Key ${key} not found.`;
+    try {
+      const result = await this.redis!.del(key);
+      return result > 0; // Returns true if the key was deleted
+    } catch {
+      return false;
+    }
+  }
+  async keyExists(key: string): Promise<boolean> {
+    this.checkInstance();
+    try {
+      const exists = await this.redis!.exists(key);
+      return exists > 0; // Returns true if the key exists
+    } catch {
+      return false;
+    }
   }
 
-  async keyExists(key: string): Promise<string> {
+  async addToSet(setKey: string, ...values: string[]): Promise<boolean> {
     this.checkInstance();
-    const exists = await this.redis!.exists(key);
-    return exists ? `Key ${key} exists.` : `Key ${key} does not exist.`;
+    try {
+      await this.redis!.sadd(setKey, ...values);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  async addToSet(setKey: string, ...values: string[]): Promise<string> {
+  async getSetMembers(setKey: string): Promise<string[] | null> {
     this.checkInstance();
-    await this.redis!.sadd(setKey, ...values);
-    return `Values added to set ${setKey}.`;
+    try {
+      return this.redis!.smembers(setKey);
+    } catch {
+      return null;
+    }
   }
 
-  async getSetMembers(setKey: string): Promise<string[]> {
+  async removeFromSet(setKey: string, ...values: string[]): Promise<boolean> {
     this.checkInstance();
-    return this.redis!.smembers(setKey);
+    try {
+      const result = await this.redis!.srem(setKey, ...values);
+      return result > 0; // Returns true if values were removed
+    } catch {
+      return false;
+    }
   }
 
-  async removeFromSet(setKey: string, ...values: string[]): Promise<string> {
+  async setExists(setKey: string): Promise<boolean> {
     this.checkInstance();
-    const result = await this.redis!.srem(setKey, ...values);
-    return result
-      ? `Values removed from set ${setKey}.`
-      : `Values not found in set ${setKey}.`;
-  }
-
-  async setExists(setKey: string): Promise<string> {
-    this.checkInstance();
-    const exists = await this.redis!.exists(setKey);
-    return exists ? `Set ${setKey} exists.` : `Set ${setKey} does not exist.`;
+    try {
+      const exists = await this.redis!.exists(setKey);
+      return exists > 0; // Returns true if the set exists
+    } catch {
+      return false;
+    }
   }
 }
 

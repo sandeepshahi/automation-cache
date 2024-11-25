@@ -1,3 +1,3 @@
-import redisService from "./services/redisService";
+import RedisService from "./services/redisService";
 
-export { redisService };
+export { RedisService };

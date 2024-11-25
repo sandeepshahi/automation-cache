@@ -41,22 +41,38 @@ Once your environment is configured, you can start using the redisService in you
 Here is a sample usage of the ONDC Automation Cache Library:
 
 ```js
-import { redisService } from "ondc-automation-cache-lib";
+import { RedisService } from "ondc-automation-cache-lib";
 
 // Select and use database 0
-redisService.useDb(0);
+RedisService.useDb(0);
+
+import { RedisService } from "ondc-automation-cache-lib";
+
+// Select and use database 0
+RedisService.useDb(0);
 
 (async () => {
-  // Set a key with an expiration time of 1 hour (3600 seconds)
-  await redisService.setKey("exampleKey", "exampleValue", 3600);
+  // Set a key with TTL
+  const setResult = await RedisService.setKey(
+    "example-key",
+    "example-value",
+    3600
+  );
+  console.log("Set key result:", setResult); // Outputs: true
 
-  // Get the value of the key
-  console.log(await redisService.getKey("exampleKey"));
+  // Get a key
+  const value = await RedisService.getKey("example-key");
+  console.log("Value:", value); // Outputs: example-value
 
-  // Add values to a Redis set
-  await redisService.addToSet("exampleSet", "value1", "value2");
+  // Check if a key exists
+  const exists = await RedisService.keyExists("example-key");
+  console.log("Key exists:", exists); // Outputs: true
 
-  // Get the members of the set
-  console.log(await redisService.getSetMembers("exampleSet"));
-})();
+  // Delete a key
+  const deleteResult = await RedisService.deleteKey("example-key");
+  console.log("Delete key result:", deleteResult); // Outputs: true
+
+  // Check if the key exists after deletion
+  const existsAfterDelete = await RedisService.keyExists("example-key");
+  console.log("Key exists after delete:", existsAfterDelete); // Outputs: false
 ```
