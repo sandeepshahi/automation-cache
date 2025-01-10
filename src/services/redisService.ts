@@ -60,6 +60,16 @@ class RedisService {
     }
   }
 
+  async getAllKeys(pattern: string = "*"): Promise<string[] | null> {
+    this.checkInstance();
+    try {
+      return await this.redis!.keys(pattern);
+    } catch (error) {
+      console.error("Error fetching keys:", error);
+      return null;
+    }
+  }
+
   async addToSet(setKey: string, ...values: string[]): Promise<boolean> {
     this.checkInstance();
     try {

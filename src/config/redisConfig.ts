@@ -18,6 +18,16 @@ export const getRedisInstance = (dbIndex: number = 0): Redis => {
     username: REDIS_USERNAME,
     password: REDIS_PASSWORD,
     db: dbIndex,
+    retryStrategy(times) {
+      // Retry up to 5 times with an increasing delay
+      if (times >= 5) {
+        console.error(`Redis connection failed after ${times} attempts.`);
+        return null; // Stops further retries
+      }
+      const delay = Math.min(times * 100, 2000); // Delay caps at 2 seconds
+      console.log(`Retrying connection to Redis (attempt ${times})...`);
+      return delay;
+    },
   });
 
   redis.on("connect", () => console.log(`Connected to Redis DB: ${dbIndex}`));
