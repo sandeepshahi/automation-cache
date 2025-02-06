@@ -14,7 +14,7 @@ class InstanceManager {
     if (this.currentDbIndex !== dbIndex) {
       this.redis = getRedisInstance(dbIndex);
       this.currentDbIndex = dbIndex;
-      console.log(`Switched to Redis DB: ${dbIndex}`);
+      // console.log(`Switched to Redis DB: ${dbIndex}`);
     }
 
     return this.redis!;

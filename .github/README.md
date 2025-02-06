@@ -51,6 +51,11 @@ import { RedisService } from "ondc-automation-cache-lib";
 // Select and use database 0
 RedisService.useDb(0);
 
+// subscribe to the db and listen to the message
+RedisService.subscribeToDb(0, (message) => {
+  console.log("message", message);
+});
+
 (async () => {
   // Set a key with TTL
   const setResult = await RedisService.setKey(
