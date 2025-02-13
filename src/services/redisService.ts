@@ -157,6 +157,18 @@ class RedisService {
   //     return false;
   //   }
   // }
+
+  // New disconnect method to close Redis connections and avoid open handles during tests.
+  async disconnect(): Promise<void> {
+    if (this.redis) {
+      await this.redis.quit();
+      this.redis = null;
+    }
+    if (this.subscriber) {
+      await this.subscriber.quit();
+      this.subscriber = null;
+    }
+  }
 }
 
 export default new RedisService();
