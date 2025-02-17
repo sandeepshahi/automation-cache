@@ -7,7 +7,6 @@ The ONDC Automation Cache Library is a utility designed for seamless integration
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Example](#example)
   <!-- - [API Reference](#api-reference)
   - [redisService Methods](#redisService-methods)
   - [License](#license) -->
@@ -24,28 +23,157 @@ To get started with the ONDC Automation Cache Library, follow these steps:
 npm i
 ```
 
+# automation-cache
+
+A Redis-based caching library with multiple specialized cache services for different purposes.
+
+## Installation
+
+```bash
+npm install ondc-automation-cache-lib
+```
+
 ## Configuration
 
-Before using the library, you need to configure Redis. Follow these steps:
+Create a `.env` file in your project root:
 
-1. Create a .env file in the root directory of your project.
-
-2. Add your Redis configuration to the .env file. You can reference the .env-example file for the required format.
+```env
+REDIS_HOST=redis      # Use 'localhost' if running Redis locally
+REDIS_PORT=6379
+REDIS_USERNAME=       # Optional
+REDIS_PASSWORD=       # Optional
+```
 
 ## Usage
 
-Once your environment is configured, you can start using the redisService in your project.
+### Basic Redis Operations
 
-## Example
-
-Here is a sample usage of the ONDC Automation Cache Library:
-
-```js
+```typescript
 import { RedisService } from "ondc-automation-cache-lib";
 
-// Select and use database 0
-RedisService.useDb(0);
+// Basic key-value operations
+await RedisService.setKey("example-key", "example-value");
+const value = await RedisService.getKey("example-key");
+const exists = await RedisService.keyExists("example-key");
+await RedisService.deleteKey("example-key");
 
+// Database selection
+RedisService.useDb(0); // Switch to database 0
+
+// Pub/Sub functionality
+RedisService.subscribeToDb(0, (message) => {
+  console.log("Received message:", message);
+});
+```
+
+### Specialized Cache Services
+
+The library provides several specialized cache services for different purposes:
+
+#### API Service Cache (DB 0)
+
+```typescript
+import { ApiServiceCache, RedisService } from "ondc-automation-cache-lib";
+
+const apiCache = new ApiServiceCache(RedisService);
+
+// Session management
+await apiCache.setSessionIdFromAPIService("sessionId", "sessionData");
+const session = await apiCache.getSessionIdFromAPIService("sessionId");
+
+// Subscriber management
+await apiCache.setSubscriberCache("subscriberUrl", "subscriberData");
+const subscriber = await apiCache.getSubscriberCache("subscriberUrl");
+
+// Transaction management
+await apiCache.setTransactionCache("txnId", "transactionData");
+const transaction = await apiCache.getTransactionCache("txnId");
+```
+
+#### Mock Service Cache (DB 1)
+
+```typescript
+import { MockServiceCache, RedisService } from "ondc-automation-cache-lib";
+
+const mockCache = new MockServiceCache(RedisService);
+await mockCache.setMockData("mockId", "mockData");
+const mockData = await mockCache.getMockData("mockId");
+```
+
+#### Reporting Cache Service (DB 2)
+
+```typescript
+import { ReportingCacheService, RedisService } from "ondc-automation-cache-lib";
+
+const reportingCache = new ReportingCacheService(RedisService);
+await reportingCache.setReportingData("reportId", "reportData");
+const reportData = await reportingCache.getReportingData("reportId");
+```
+
+#### Config Cache Service (DB 3)
+
+```typescript
+import { ConfigCacheService, RedisService } from "ondc-automation-cache-lib";
+
+const configCache = new ConfigCacheService(RedisService);
+await configCache.setConfigData("configId", "configData");
+const configData = await configCache.getConfigData("configId");
+```
+
+#### Console Cache Service (DB 4)
+
+```typescript
+import { ConsoleCacheService, RedisService } from "ondc-automation-cache-lib";
+
+const consoleCache = new ConsoleCacheService(RedisService);
+await consoleCache.setConsoleData("consoleId", "consoleData");
+const consoleData = await consoleCache.getConsoleData("consoleId");
+```
+
+## Database Index Map
+
+- DB 0: API Service Cache
+- DB 1: Mock Service Cache
+- DB 2: Reporting Cache Service
+- DB 3: Config Cache Service
+- DB 4: Console Cache Service
+
+## Docker Support
+
+If you're using Docker, include Redis in your docker-compose.yml:
+
+```yaml
+services:
+  redis:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - automation-network
+```
+
+## Cleanup
+
+To properly close Redis connections (important for testing):
+
+```typescript
+await RedisService.disconnect();
+```
+
+## Error Handling
+
+All cache operations return `null` or `false` on failure rather than throwing errors. Check return values to handle errors appropriately.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+```js
 import { RedisService } from "ondc-automation-cache-lib";
 
 // Select and use database 0
@@ -80,4 +208,5 @@ RedisService.subscribeToDb(0, (message) => {
   // Check if the key exists after deletion
   const existsAfterDelete = await RedisService.keyExists("example-key");
   console.log("Key exists after delete:", existsAfterDelete); // Outputs: false
+})();
 ```
