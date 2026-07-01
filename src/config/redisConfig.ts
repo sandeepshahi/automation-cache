@@ -3,7 +3,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const { REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD } = process.env;
+const { REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_RETRY_DELAY } = process.env;
+
+const RETRY_DELAY = Number(REDIS_RETRY_DELAY) || 5000;
 
 const redisInstances: Record<number, Redis> = {};
 
@@ -19,14 +21,11 @@ export const getRedisInstance = (dbIndex: number = 0): Redis => {
     password: REDIS_PASSWORD,
     db: dbIndex,
     retryStrategy(times) {
-      // Retry up to 5 times with an increasing delay
-      if (times >= 5) {
-        console.error(`Redis connection failed after ${times} attempts.`);
-        return null; // Stops further retries
+      if (times % 10 === 0) {
+        console.error(`Redis [DB: ${dbIndex}] still unreachable after ${times} attempts — will keep retrying.`);
       }
-      const delay = Math.min(times * 100, 2000); // Delay caps at 2 seconds
-      console.log(`Retrying connection to Redis (attempt ${times})...`);
-      return delay;
+      console.log(`Redis [DB: ${dbIndex}] reconnect attempt ${times}, retrying in ${RETRY_DELAY}ms...`);
+      return RETRY_DELAY;
     },
   });
 
